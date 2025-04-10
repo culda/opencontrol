@@ -1,15 +1,15 @@
 /// <reference types="vite-plugin-pages/client-solid" />
 
-import { Router } from '@solidjs/router';
-import routes from '~solid-pages';
+import { Router } from "@solidjs/router"
+import routes from "~solid-pages"
 import "./ui/style/index.css"
-import { MetaProvider } from '@solidjs/meta';
+import { MetaProvider } from "@solidjs/meta"
 import { OpenAuthProvider } from "@openauthjs/solid"
-import { AccountProvider } from './components/context-account';
-import { DialogProvider } from './ui/context-dialog';
-import { DialogString } from './ui/dialog-string';
-import { DialogSelect } from './ui/dialog-select';
-import { ThemeProvider } from './components/context-theme';
+import { AccountProvider } from "./components/context-account"
+import { DialogProvider } from "./ui/context-dialog"
+import { DialogString } from "./ui/dialog-string"
+import { DialogSelect } from "./ui/dialog-select"
+import { ThemeProvider } from "./components/context-theme"
 
 export function App(props: { url?: string }) {
   return (
@@ -23,10 +23,8 @@ export function App(props: { url?: string }) {
               <Router
                 children={routes}
                 url={props.url}
-                root={props => {
-                  return <>
-                    {props.children}
-                  </>
+                root={(props) => {
+                  return <>{props.children}</>
                 }}
               />
             </MetaProvider>
@@ -34,5 +32,5 @@ export function App(props: { url?: string }) {
         </OpenAuthProvider>
       </DialogProvider>
     </ThemeProvider>
-  );
+  )
 }

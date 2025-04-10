@@ -1,10 +1,10 @@
-import { createStore } from "solid-js/store";
-import { makePersisted } from "@solid-primitives/storage";
-import { createEffect } from "solid-js";
-import { createInitializedContext } from "../util/context";
+import { createStore } from "solid-js/store"
+import { makePersisted } from "@solid-primitives/storage"
+import { createEffect } from "solid-js"
+import { createInitializedContext } from "../util/context"
 
 interface Storage {
-  mode: "light" | "dark";
+  mode: "light" | "dark"
 }
 
 export const { provider: ThemeProvider, use: useTheme } =
@@ -13,26 +13,25 @@ export const { provider: ThemeProvider, use: useTheme } =
       createStore<Storage>({
         mode:
           window.matchMedia &&
-            window.matchMedia("(prefers-color-scheme: dark)").matches
+          window.matchMedia("(prefers-color-scheme: dark)").matches
             ? "dark"
             : "light",
       }),
       {
         name: "theme",
       },
-    );
+    )
     createEffect(() => {
-      document.documentElement.setAttribute("data-color-mode", store.mode);
-    });
+      document.documentElement.setAttribute("data-color-mode", store.mode)
+    })
 
     return {
       setMode(mode: Storage["mode"]) {
-        setStore("mode", mode);
+        setStore("mode", mode)
       },
       get mode() {
-        return store.mode;
+        return store.mode
       },
       ready: true,
-    };
-  });
-
+    }
+  })

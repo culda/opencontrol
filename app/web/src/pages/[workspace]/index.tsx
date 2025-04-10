@@ -13,7 +13,9 @@ export default function Index() {
   const zero = useZero()
   const auth = useOpenAuth()
   const account = useAccount()
-  const [users] = useQuery(() => zero.query.user.related("workspace").orderBy("time_seen", "desc"))
+  const [users] = useQuery(() =>
+    zero.query.user.related("workspace").orderBy("time_seen", "desc"),
+  )
   const dialog = useDialog()
 
   // Current user from account
@@ -44,7 +46,9 @@ export default function Index() {
           <div data-component-user-info>
             <div data-component-user-email>{currentUser?.email || ""}</div>
           </div>
-          <Button color="primary" onClick={() => auth.logout()}>Logout</Button>
+          <Button color="primary" onClick={() => auth.logout()}>
+            Logout
+          </Button>
         </div>
       </div>
 
@@ -62,39 +66,41 @@ export default function Index() {
         </div>
 
         <ul>
-          {users().map(x => (
+          {users().map((x) => (
             <li>
-              <ul onClick={() => {
-                dialog.open(DialogSelect, {
-                  placeholder: "Select",
-                  title: "Edit user",
-                  options: [
-                    {
-                      display: "Change name",
-                      onSelect: () => {
-                        dialog.open(DialogString, {
-                          title: "Enter a name",
-                          action: "Change name",
-                          placeholder: "Enter a name",
-                          onSubmit: (value) => {
-                            zero.mutate.user.update({
-                              id: x.id,
-                              workspace_id: x.workspace_id,
-                              name: value,
-                            })
-                          }
-                        })
-                      }
-                    },
-                    {
-                      display: "Remove user",
-                      onSelect: () => {
-                        dialog.close()
-                      }
-                    }
-                  ],
-                })
-              }}>
+              <ul
+                onClick={() => {
+                  dialog.open(DialogSelect, {
+                    placeholder: "Select",
+                    title: "Edit user",
+                    options: [
+                      {
+                        display: "Change name",
+                        onSelect: () => {
+                          dialog.open(DialogString, {
+                            title: "Enter a name",
+                            action: "Change name",
+                            placeholder: "Enter a name",
+                            onSubmit: (value) => {
+                              zero.mutate.user.update({
+                                id: x.id,
+                                workspace_id: x.workspace_id,
+                                name: value,
+                              })
+                            },
+                          })
+                        },
+                      },
+                      {
+                        display: "Remove user",
+                        onSelect: () => {
+                          dialog.close()
+                        },
+                      },
+                    ],
+                  })
+                }}
+              >
                 <li>{x.id}</li>
                 <li>{x.email}</li>
                 <li>{x.name || "No name"}</li>

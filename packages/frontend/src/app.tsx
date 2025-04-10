@@ -69,7 +69,6 @@ export function App() {
 
   createEffect(() => {
     const messages = store.prompt
-    console.log("scrolling to bottom")
     root?.scrollTo(0, root?.scrollHeight)
     return messages.length
   }, 0)
@@ -135,7 +134,6 @@ export function App() {
         if (response.status === 400) {
           setStore("prompt", (val) => {
             val.splice(2, 1)
-            console.log(val)
             return [...val]
           })
         }

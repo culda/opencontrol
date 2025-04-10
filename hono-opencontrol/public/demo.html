@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenControl Demo</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+      line-height: 1.6;
+      color: #333;
+    }
+    h1, h2, h3 {
+      color: #0070f3;
+    }
+    .card {
+      background: #f9f9f9;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    button {
+      background: #0070f3;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      border: none;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0060df;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .result {
+      background: #f0f0f0;
+      padding: 1rem;
+      border-radius: 5px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      margin-top: 1rem;
+    }
+    .error {
+      color: #e00;
+    }
+  </style>
+</head>
+<body>
+  <h1>OpenControl Demo</h1>
+  
+  <div class="card">
+    <h2>Authentication</h2>
+    <div>
+      <label for="apiKey">API Key:</label>
+      <input type="password" id="apiKey" value="password">
+    </div>
+    <button id="authButton">Authenticate</button>
+    <div id="authResult" class="result"></div>
+  </div>
+  
+  <div class="card">
+    <h2>Tool Demo</h2>
+    <div>
+      <label for="toolSelect">Select Tool:</label>
+      <select id="toolSelect">
+        <option value="echo">Echo</option>
+        <option value="calculator">Calculator</option>
+        <option value="weather">Weather</option>
+      </select>
+    </div>
+    
+    <div id="echoParams" class="tool-params">
+      <label for="echoMessage">Message:</label>
+      <input type="text" id="echoMessage" value="Hello, world!">
+    </div>
+    
+    <div id="calculatorParams" class="tool-params" style="display: none;">
+      <label for="operation">Operation:</label>
+      <select id="operation">
+        <option value="add">Add</option>
+        <option value="subtract">Subtract</option>
+        <option value="multiply">Multiply</option>
+        <option value="divide">Divide</option>
+      </select>
+      
+      <label for="numA">First Number:</label>
+      <input type="number" id="numA" value="5">
+      
+      <label for="numB">Second Number:</label>
+      <input type="number" id="numB" value="3">
+    </div>
+    
+    <div id="weatherParams" class="tool-params" style="display: none;">
+      <label for="location">Location:</label>
+      <input type="text" id="location" value="New York">
+    </div>
+    
+    <button id="callToolButton">Call Tool</button>
+    <div id="toolResult" class="result"></div>
+  </div>
+  
+  <div class="card">
+    <h2>List Available Tools</h2>
+    <button id="listToolsButton">List Tools</button>
+    <div id="toolsList" class="result"></div>
+  </div>
+  
+  <script src="/client.js"></script>
+  <script>
+    // Initialize client
+    const client = new OpenControlClient('', document.getElementById('apiKey').value);
+    
+    // Handle authentication
+    document.getElementById('authButton').addEventListener('click', async () => {
+      const apiKey = document.getElementById('apiKey').value;
+      client.apiKey = apiKey;
+      
+      const resultElement = document.getElementById('authResult');
+      resultElement.textContent = 'Authenticating...';
+      resultElement.className = 'result';
+      
+      try {
+        const result = await client.authenticate();
+        resultElement.textContent = result ? 'Authentication successful!' : 'Authentication failed!';
+        resultElement.className = result ? 'result' : 'result error';
+      } catch (error) {
+        resultElement.textContent = `Error: ${error.message}`;
+        resultElement.className = 'result error';
+      }
+    });
+    
+    // Handle tool selection
+    document.getElementById('toolSelect').addEventListener('change', (e) => {
+      const tool = e.target.value;
+      document.querySelectorAll('.tool-params').forEach(el => el.style.display = 'none');
+      document.getElementById(`${tool}Params`).style.display = 'block';
+    });
+    
+    // Handle tool call
+    document.getElementById('callToolButton').addEventListener('click', async () => {
+      const tool = document.getElementById('toolSelect').value;
+      const resultElement = document.getElementById('toolResult');
+      resultElement.textContent = 'Calling tool...';
+      resultElement.className = 'result';
+      
+      try {
+        let args = {};
+        
+        if (tool === 'echo') {
+          args = {
+            message: document.getElementById('echoMessage').value
+          };
+        } else if (tool === 'calculator') {
+          args = {
+            operation: document.getElementById('operation').value,
+            a: parseFloat(document.getElementById('numA').value),
+            b: parseFloat(document.getElementById('numB').value)
+          };
+        } else if (tool === 'weather') {
+          args = {
+            location: document.getElementById('location').value
+          };
+        }
+        
+        const result = await client.callTool(tool, args);
+        resultElement.textContent = JSON.stringify(result, null, 2);
+      } catch (error) {
+        resultElement.textContent = `Error: ${error.message}`;
+        resultElement.className = 'result error';
+      }
+    });
+    
+    // Handle list tools
+    document.getElementById('listToolsButton').addEventListener('click', async () => {
+      const resultElement = document.getElementById('toolsList');
+      resultElement.textContent = 'Listing tools...';
+      resultElement.className = 'result';
+      
+      try {
+        const result = await client.listTools();
+        resultElement.textContent = JSON.stringify(result, null, 2);
+      } catch (error) {
+        resultElement.textContent = `Error: ${error.message}`;
+        resultElement.className = 'result error';
+      }
+    });
+  </script>
+</body>
+</html>

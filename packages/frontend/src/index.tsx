@@ -18,6 +18,25 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 render(() => {
   const [ready, setReady] = createSignal(false)
   onMount(async () => {
+    // Try to authenticate without password first to check if auth is disabled
+    try {
+      const noAuthResult = await fetch(
+        `${import.meta.env.VITE_OPENCONTROL_ENDPOINT || ""}/auth`,
+        {
+          method: "GET",
+        },
+      )
+
+      // If successful without auth, server has auth disabled
+      if (noAuthResult.ok) {
+        setReady(true)
+        return
+      }
+    } catch (e) {
+      // Continue with password auth if this fails
+    }
+
+    // Regular password authentication flow
     setPassword(localStorage.getItem("opencontrol:password"))
     while (true) {
       if (!password()) {
@@ -26,13 +45,7 @@ render(() => {
         localStorage.setItem("opencontrol:password", result)
         setPassword(result)
       }
-      const result = await client.auth.$get({
-        json: {
-          jsonrpc: "2.0",
-          method: "initialize",
-          id: "1",
-        },
-      })
+      const result = await client.auth.$get()
 
       if (!result.ok) {
         localStorage.removeItem("opencontrol:password")

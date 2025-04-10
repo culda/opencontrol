@@ -13,6 +13,7 @@ import {
 import { z } from "zod"
 import { HTTPException } from "hono/http-exception"
 import { bearerAuth } from "hono/bearer-auth"
+import type { MiddlewareHandler } from "hono"
 
 export interface OpenControlOptions {
   tools: Tool[]
@@ -32,50 +33,94 @@ export function create(input: OpenControlOptions) {
     "password"
   console.log("opencontrol password:", token)
   const app = input.app ?? new Hono()
-  return app
-    .use(
-      cors({
-        origin: "*",
-        allowHeaders: ["*"],
-        allowMethods: ["GET"],
-        credentials: false,
-      }),
-    )
-    .get("/", (c) => {
-      return c.html(HTML)
+
+  // Create the base app with CORS
+  const baseApp = app.use(
+    cors({
+      origin: "*",
+      allowHeaders: ["*"],
+      allowMethods: ["GET", "POST"],
+      credentials: false,
     })
-    .use(
-      bearerAuth({
-        token,
-      }),
-    )
-    .get("/auth", (c) => {
-      return c.json({})
-    })
-    .post(
-      "/generate",
-      zValidator("json", z.custom<LanguageModelV1CallOptions>()),
-      async (c) => {
-        if (!input.model)
-          throw new HTTPException(400, { message: "No model configured" })
-        const body = c.req.valid("json")
-        try {
-          const result = await input.model.doGenerate(body)
-          return c.json(result)
-        } catch (error) {
-          console.error(error)
-          if (error instanceof APICallError) {
-            throw new HTTPException(error.statusCode || (500 as any), {
-              message: "error",
-            })
-          }
-          throw new HTTPException(500, { message: "error" })
-        }
-      },
-    )
-    .post("/mcp", async (c) => {
-      const body = await c.req.json()
-      const result = await mcp.process(body)
+  )
+
+  // Add the HTML route to the base app
+  baseApp.get("/", (c) => {
+    return c.html(HTML)
+  })
+
+  // Default auth middleware
+  const defaultAuthMiddleware = disableAuth
+    ? (c: any, next: () => Promise<any>) => next() // No-op middleware when auth is disabled
+    : bearerAuth({ token })
+
+  // Define the API route handlers
+  const authHandler = (c) => {
+    return c.json({})
+  }
+
+  const generateHandler = async (c) => {
+    if (!input.model)
+      throw new HTTPException(400, { message: "No model configured" })
+    // @ts-ignore
+    const body = c.req.valid("json")
+    try {
+      const result = await input.model.doGenerate(body)
       return c.json(result)
-    })
+    } catch (error) {
+      console.error(error)
+      if (error instanceof APICallError) {
+        throw new HTTPException(error.statusCode || (500 as any), {
+          message: "error",
+        })
+      }
+      throw new HTTPException(500, { message: "error" })
+    }
+  }
+
+  const mcpHandler = async (c) => {
+    const body = await c.req.json()
+    const result = await mcp.process(body)
+    return c.json(result)
+  }
+
+  // Return an object with the fetch handler and auth method
+  return {
+    fetch: baseApp.fetch.bind(baseApp),
+
+    // Method to customize auth middleware
+    auth(customAuthMiddleware?: MiddlewareHandler) {
+      // Use the provided auth middleware or fall back to the default
+      const authMiddleware = customAuthMiddleware || defaultAuthMiddleware
+
+      // Apply the auth middleware to each API route individually
+      baseApp.get("/auth", authMiddleware, authHandler)
+      baseApp.post(
+        "/generate",
+        authMiddleware,
+        // @ts-ignore
+        zValidator("json", z.custom<LanguageModelV1CallOptions>()),
+        generateHandler
+      )
+      baseApp.post("/mcp", authMiddleware, mcpHandler)
+
+      // Return this for chaining
+      return this
+    },
+
+    // Initialize with default auth if not customized
+    init() {
+      // Apply the default auth middleware to each API route
+      baseApp.get("/auth", defaultAuthMiddleware, authHandler)
+      baseApp.post(
+        "/generate",
+        defaultAuthMiddleware,
+        // @ts-ignore
+        zValidator("json", z.custom<LanguageModelV1CallOptions>()),
+        generateHandler
+      )
+      baseApp.post("/mcp", defaultAuthMiddleware, mcpHandler)
+      return this
+    }
+  }
 }

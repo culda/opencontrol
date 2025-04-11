@@ -5,7 +5,6 @@ import { cors } from "hono/cors"
 import HTML from "opencontrol-frontend/dist/index.html" with { type: "text" }
 import { zValidator } from "@hono/zod-validator"
 import {
-  AISDKError,
   APICallError,
   LanguageModelV1,
   LanguageModelV1CallOptions,
@@ -53,7 +52,7 @@ export function create(input: OpenControlOptions) {
     if (!input.model)
       throw new HTTPException(400, { message: "No model configured" })
     // @ts-ignore
-    const body = c.req.valid("json")
+    const body = c.req.valid("json") as LanguageModelV1CallOptions
     try {
       const result = await input.model.doGenerate(body)
       return c.json(result)
@@ -77,21 +76,17 @@ export function create(input: OpenControlOptions) {
   // Default auth middleware
   const defaultAuthMiddleware = bearerAuth({ token })
 
-  // Return an object with the fetch handler and auth method
   return {
     fetch: baseApp.fetch.bind(baseApp),
 
-    // Method to customize auth middleware
     auth(customAuthMiddleware?: MiddlewareHandler) {
       // Use the provided auth middleware or fall back to the default
       const authMiddleware = customAuthMiddleware || defaultAuthMiddleware
 
-      // Apply the auth middleware to each API route individually
       baseApp.get("/auth", authMiddleware, authHandler)
       baseApp.post(
         "/generate",
         authMiddleware,
-        // @ts-ignore
         zValidator("json", z.custom<LanguageModelV1CallOptions>()),
         generateHandler
       )
@@ -103,12 +98,10 @@ export function create(input: OpenControlOptions) {
 
     // Initialize with default auth if not customized
     init() {
-      // Apply the default auth middleware to each API route
       baseApp.get("/auth", defaultAuthMiddleware, authHandler)
       baseApp.post(
         "/generate",
         defaultAuthMiddleware,
-        // @ts-ignore
         zValidator("json", z.custom<LanguageModelV1CallOptions>()),
         generateHandler
       )

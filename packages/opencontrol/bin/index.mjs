@@ -9,7 +9,6 @@ const server = new Server({
 
 const url = process.argv[2]
 const key = process.argv[3]
-const disableAuth = process.env.OPENCONTROL_DISABLE_AUTH === "true"
 
 class ProxyTransport {
   #stdio = new StdioServerTransport()

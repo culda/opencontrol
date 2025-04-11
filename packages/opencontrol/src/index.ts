@@ -20,15 +20,12 @@ export interface OpenControlOptions {
   password?: string
   model?: LanguageModelV1
   app?: Hono
-  disableAuth?: boolean
 }
 
 export type App = ReturnType<typeof create>
 
 export function create(input: OpenControlOptions) {
   const mcp = createMcp({ tools: input.tools })
-  const disableAuth =
-    input.disableAuth || process.env.OPENCONTROL_DISABLE_AUTH === "true"
   const token = input.password || process.env.OPENCONTROL_PASSWORD || "password"
   const app = input.app ?? new Hono()
 
@@ -46,11 +43,6 @@ export function create(input: OpenControlOptions) {
   baseApp.get("/", (c) => {
     return c.html(HTML)
   })
-
-  // Default auth middleware
-  const defaultAuthMiddleware = disableAuth
-    ? (c: any, next: () => Promise<any>) => next() // No-op middleware when auth is disabled
-    : bearerAuth({ token })
 
   // Define the API route handlers
   const authHandler = (c: any) => {
@@ -81,6 +73,9 @@ export function create(input: OpenControlOptions) {
     const result = await mcp.process(body)
     return c.json(result)
   }
+
+  // Default auth middleware
+  const defaultAuthMiddleware = bearerAuth({ token })
 
   // Return an object with the fetch handler and auth method
   return {

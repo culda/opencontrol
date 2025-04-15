@@ -15,18 +15,12 @@ class ProxyTransport {
   async start() {
     this.#stdio.onmessage = (message) => {
       if ("id" in message) {
-        const headers = {
-          "Content-Type": "application/json",
-        }
-
-        // Only add authorization header if auth is not disabled and key is provided
-        if (!disableAuth && key) {
-          headers.authorization = `Bearer ${key}`
-        }
-
         fetch(url + "/mcp", {
           method: "POST",
-          headers,
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${key}`,
+          },
           body: JSON.stringify(message),
         }).then(async (response) => this.send(await response.json()))
         return

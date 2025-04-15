@@ -87,6 +87,7 @@ export function create(input: OpenControlOptions) {
       baseApp.post(
         "/generate",
         authMiddleware,
+        // @ts-ignore 
         zValidator("json", z.custom<LanguageModelV1CallOptions>()),
         generateHandler
       )
@@ -102,6 +103,7 @@ export function create(input: OpenControlOptions) {
       baseApp.post(
         "/generate",
         defaultAuthMiddleware,
+        // @ts-ignore 
         zValidator("json", z.custom<LanguageModelV1CallOptions>()),
         generateHandler
       )

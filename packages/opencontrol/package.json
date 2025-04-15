@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "opencontrol-server",
+  "name": "opencontrol",
   "version": "0.1.0",
   "type": "module",
   "bin": {

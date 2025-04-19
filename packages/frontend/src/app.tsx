@@ -21,7 +21,6 @@ const getInitialPrompt = (): LanguageModelV1Prompt => {
   return [
     {
       role: "system",
-      // Combine both system messages into one for OpenAI compatibility
       content: `${SYSTEM_PROMPT}\n\nThe current date is ${currentDate}`,
       providerMetadata: {
         anthropic: {

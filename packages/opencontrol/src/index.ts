@@ -11,12 +11,10 @@ import {
 } from "ai"
 import { z } from "zod"
 import { HTTPException } from "hono/http-exception"
-import { bearerAuth } from "hono/bearer-auth"
-import type { Context, MiddlewareHandler } from "hono"
+import type { Context } from "hono"
 
 export interface OpenControlOptions {
   tools: Tool[]
-  password?: string
   model?: LanguageModelV1
   app?: Hono
 }
@@ -25,7 +23,6 @@ export type App = ReturnType<typeof create>
 
 export function create(input: OpenControlOptions) {
   const mcp = createMcp({ tools: input.tools })
-  const token = input.password || process.env.OPENCONTROL_PASSWORD || "password"
   const app = input.app ?? new Hono()
 
   // Create the base app with CORS
@@ -34,19 +31,9 @@ export function create(input: OpenControlOptions) {
       origin: "*",
       allowHeaders: ["*"],
       allowMethods: ["GET", "POST"],
-      credentials: false,
+      credentials: true,
     })
   )
-
-  // Add the HTML route to the base app
-  baseApp.get("/", (c) => {
-    return c.html(HTML)
-  })
-
-  // Define the API route handlers
-  const authHandler = (c: any) => {
-    return c.json({})
-  }
 
   const generateHandler = async (c: Context) => {
     if (!input.model)
@@ -73,42 +60,22 @@ export function create(input: OpenControlOptions) {
     return c.json(result)
   }
 
-  // Default auth middleware
-  const defaultAuthMiddleware = bearerAuth({ token })
+
+  // Add the HTML route to the base app
+  baseApp.get("/", async (c) => {
+    return c.html(HTML)
+  })
+
+  baseApp.post(
+    "/generate",
+    // @ts-ignore 
+    zValidator("json", z.custom<LanguageModelV1CallOptions>()),
+    generateHandler
+  )
+
+  baseApp.post("/mcp", mcpHandler)
 
   return {
     fetch: baseApp.fetch.bind(baseApp),
-
-    auth(customAuthMiddleware?: MiddlewareHandler) {
-      // Use the provided auth middleware or fall back to the default
-      const authMiddleware = customAuthMiddleware || defaultAuthMiddleware
-
-      baseApp.get("/auth", authMiddleware, authHandler)
-      baseApp.post(
-        "/generate",
-        authMiddleware,
-        // @ts-ignore 
-        zValidator("json", z.custom<LanguageModelV1CallOptions>()),
-        generateHandler
-      )
-      baseApp.post("/mcp", authMiddleware, mcpHandler)
-
-      // Return this for chaining
-      return this
-    },
-
-    // Initialize with default auth if not customized
-    init() {
-      baseApp.get("/auth", defaultAuthMiddleware, authHandler)
-      baseApp.post(
-        "/generate",
-        defaultAuthMiddleware,
-        // @ts-ignore 
-        zValidator("json", z.custom<LanguageModelV1CallOptions>()),
-        generateHandler
-      )
-      baseApp.post("/mcp", defaultAuthMiddleware, mcpHandler)
-      return this
-    }
   }
 }

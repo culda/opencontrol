@@ -1,5 +1,13 @@
 # opencontrol-frontend
 
+## 0.0.9
+
+### Patch Changes
+
+- f25ead2: new updates
+- Updated dependencies [f25ead2]
+  - opencontrol@0.1.4
+
 ## 0.0.8
 
 ### Patch Changes

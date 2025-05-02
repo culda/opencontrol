@@ -1,5 +1,11 @@
 # opencontrol
 
+## 0.1.1
+
+### Patch Changes
+
+- 6d42c93: patch
+
 ## 0.1.0
 
 ### Minor Changes

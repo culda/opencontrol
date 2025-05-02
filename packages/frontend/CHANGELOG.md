@@ -1,5 +1,14 @@
 # opencontrol-frontend
 
+## 0.0.8
+
+### Patch Changes
+
+- ceb04c3: version bump
+- Updated dependencies [79751cc]
+- Updated dependencies [ceb04c3]
+  - opencontrol@0.1.3
+
 ## 0.0.7
 
 ### Patch Changes

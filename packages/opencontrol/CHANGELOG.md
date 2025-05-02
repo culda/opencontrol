@@ -1,5 +1,12 @@
 # opencontrol
 
+## 0.1.3
+
+### Patch Changes
+
+- 79751cc: version bump
+- ceb04c3: version bump
+
 ## 0.1.2
 
 ### Patch Changes

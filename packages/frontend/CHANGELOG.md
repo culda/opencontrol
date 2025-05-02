@@ -1,5 +1,12 @@
 # opencontrol-frontend
 
+## 0.0.10
+
+### Patch Changes
+
+- Updated dependencies [a27ba87]
+  - opencontrol@0.1.5
+
 ## 0.0.9
 
 ### Patch Changes

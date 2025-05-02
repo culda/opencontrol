@@ -1,5 +1,11 @@
 # opencontrol
 
+## 0.1.5
+
+### Patch Changes
+
+- a27ba87: release script
+
 ## 0.1.4
 
 ### Patch Changes

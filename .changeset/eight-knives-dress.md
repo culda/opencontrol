@@ -1,5 +1,0 @@
----
-"opencontrol": patch
----
-
-release script

@@ -5,7 +5,6 @@ import { cors } from "hono/cors"
 import HTML from "opencontrol-frontend/dist/index.html" with { type: "text" }
 import { zValidator } from "@hono/zod-validator"
 import {
-  AISDKError,
   APICallError,
   LanguageModelV1,
   LanguageModelV1CallOptions,

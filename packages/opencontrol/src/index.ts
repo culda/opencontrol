@@ -41,7 +41,7 @@ export function create(input: OpenControlOptions) {
       allowHeaders: ["*"],
       allowMethods: ["GET", "POST"],
       credentials: false,
-    })
+    }),
   )
 
   // Add the HTML route to the base app
@@ -100,7 +100,7 @@ export function create(input: OpenControlOptions) {
         authMiddleware,
         // @ts-ignore
         zValidator("json", z.custom<LanguageModelV1CallOptions>()),
-        generateHandler
+        generateHandler,
       )
       baseApp.post("/mcp", authMiddleware, mcpHandler)
 
@@ -117,10 +117,10 @@ export function create(input: OpenControlOptions) {
         defaultAuthMiddleware,
         // @ts-ignore
         zValidator("json", z.custom<LanguageModelV1CallOptions>()),
-        generateHandler
+        generateHandler,
       )
       baseApp.post("/mcp", defaultAuthMiddleware, mcpHandler)
       return this
-    }
+    },
   }
 }

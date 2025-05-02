@@ -19,7 +19,6 @@ const echoTool = tool({
   },
 })
 
-
 const JWT_SECRET = "your-jwt-secret-key"
 
 const jwtAuthMiddleware = async (c, next) => {
@@ -28,7 +27,9 @@ const jwtAuthMiddleware = async (c, next) => {
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     console.log("error")
-    throw new HTTPException(401, { message: "Unauthorized: Missing or invalid token format" })
+    throw new HTTPException(401, {
+      message: "Unauthorized: Missing or invalid token format",
+    })
   }
 
   const token = authHeader.split(" ")[1]
@@ -53,7 +54,9 @@ const jwtAuthMiddleware = async (c, next) => {
     } else if (error instanceof jwt.JsonWebTokenError) {
       throw new HTTPException(401, { message: "Unauthorized: Invalid token" })
     } else {
-      throw new HTTPException(500, { message: "Internal server error during authentication" })
+      throw new HTTPException(500, {
+        message: "Internal server error during authentication",
+      })
     }
   }
 }

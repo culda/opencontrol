@@ -2,20 +2,10 @@
 
 set -e
 
-# Read current version from package.json
-VERSION=$(node -p "require('./packages/opencontrol/package.json').version")
-
-# Increment version (patch, minor, or major based on your needs)
-NEW_VERSION=$(npm version patch --no-git-tag-version)
-
-# Commit the updated package.json
-git add packages/opencontrol/package.json
-git commit -m "chore: bump version to $NEW_VERSION [skip ci]"
-git push origin master 
-
 (cd packages/frontend && bun run build)
 (cd packages/opencontrol && bun run build)
 
 tar -cvf opencontrol.tar.gz -C packages opencontrol
 
-gh release create "v$NEW_VERSION" opencontrol.tar.gz --title "v$NEW_VERSION" --notes "Automated release"
+VERSION=$(node -p "require('./packages/opencontrol/package.json').version")
+gh release create "v$VERSION" opencontrol.tar.gz --title "v$VERSION" --notes "Automated release"

@@ -50,16 +50,14 @@ export function create(input: OpenControlOptions) {
   })
 
   // Default auth middleware
-  const defaultAuthMiddleware = disableAuth
-    ? (c: any, next: () => Promise<any>) => next() // No-op middleware when auth is disabled
-    : bearerAuth({ token })
+  const defaultAuthMiddleware = bearerAuth({ token })
 
   // Define the API route handlers
-  const authHandler = (c) => {
+  const authHandler = (c: any) => {
     return c.json({})
   }
 
-  const generateHandler = async (c) => {
+  const generateHandler = async (c: any) => {
     if (!input.model)
       throw new HTTPException(400, { message: "No model configured" })
     // @ts-ignore
@@ -78,7 +76,7 @@ export function create(input: OpenControlOptions) {
     }
   }
 
-  const mcpHandler = async (c) => {
+  const mcpHandler = async (c: any) => {
     const body = await c.req.json()
     const result = await mcp.process(body)
     return c.json(result)

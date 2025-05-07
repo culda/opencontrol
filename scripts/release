@@ -1,14 +1,5 @@
 #!/usr/bin/env bash
 
-set -e
-
-# Build packages
-(cd packages/frontend && bun run build)
-(cd packages/opencontrol && bun run build)
-
-# Create tarball
-tar -cvf opencontrol.tar.gz -C packages opencontrol
-
 # Get version from package.json
 VERSION=$(node -p "require('./packages/opencontrol/package.json').version")
 
@@ -17,6 +8,15 @@ if gh release view "v$VERSION" &>/dev/null; then
   echo "Error: Release v$VERSION already exists. Please call bun changeset version."
   exit 0
 fi
+
+set -e
+
+# Build packages
+(cd packages/frontend && bun run build)
+(cd packages/opencontrol && bun run build)
+
+# Create tarball
+tar -cvf opencontrol.tar.gz -C packages opencontrol
 
 # Create GitHub release
 gh release create "v$VERSION" opencontrol.tar.gz --title "v$VERSION" --notes "$VERSION"

@@ -7,4 +7,5 @@ set -e
 
 tar -cvf opencontrol.tar.gz -C packages opencontrol
 
+
 gh release create "v$VERSION" opencontrol.tar.gz --title "v$VERSION" --notes "$VERSION"

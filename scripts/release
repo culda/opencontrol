@@ -7,10 +7,18 @@ set -e
 
 tar -cvf opencontrol.tar.gz -C packages opencontrol
 
+CURRENT_VERSION=$(node -p "require('./packages/opencontrol/package.json').version")
+
 bun changeset version
 
-
 VERSION=$(node -p "require('./packages/opencontrol/package.json').version")
+
+if [ "$CURRENT_VERSION" == "$VERSION" ]; then
+  echo "No version change detected. Skipping release."
+  exit 0
+fi
+
+echo "Version changed from $CURRENT_VERSION to $VERSION. Proceeding with release..."
 
 # Extract changelog notes for the current version
 CHANGELOG_FILE="packages/opencontrol/CHANGELOG.md"

@@ -5,52 +5,54 @@ set -e
 (cd packages/frontend && bun run build)
 (cd packages/opencontrol && bun run build)
 
-tar -cvf opencontrol.tar.gz -C packages opencontrol
-
-CURRENT_VERSION=$(node -p "require('./packages/opencontrol/package.json').version")
-
 bun changeset version
 
-VERSION=$(node -p "require('./packages/opencontrol/package.json').version")
+# tar -cvf opencontrol.tar.gz -C packages opencontrol
 
-if [ "$CURRENT_VERSION" == "$VERSION" ]; then
-  echo "No version change detected. Skipping release."
-  exit 0
-fi
-
-echo "Version changed from $CURRENT_VERSION to $VERSION. Proceeding with release..."
-
-# Commit version bump changes and push to repository with [skip ci]
-git add .
-git commit -m "Version bump to $VERSION [skip ci]"
-git push origin HEAD
-
-# Extract changelog notes for the current version from both packages
-OC_LOG="packages/opencontrol/CHANGELOG.md"
-FE_LOG="packages/frontend/CHANGELOG.md"
-
-# Extract OpenControl changelog notes
-OC_NOTES=$(awk -v version="## $VERSION" '
-  BEGIN { print_notes = 0 }
-  $0 ~ version { print_notes = 1; next }
-  print_notes && /^## / { exit }
-  print_notes && !/^\s*$/ { print }
-' "$OC_LOG" | sed 's/^/    /')
-
-# Extract Frontend changelog notes
-FE_NOTES=$(awk -v version="## $VERSION" '
-  BEGIN { print_notes = 0 }
-  $0 ~ version { print_notes = 1; next }
-  print_notes && /^## / { exit }
-  print_notes && !/^\s*$/ { print }
-' "$FE_LOG" | sed 's/^/    /')
-
-# Combine notes with headers
-NOTES="### OpenControl Package\n\n$OC_NOTES\n\n### Frontend Package\n\n$FE_NOTES"
-
-# If no notes found in either changelog, use a fallback message
-if [ -z "$OC_NOTES" ] && [ -z "$FE_NOTES" ]; then
-  NOTES="Automated patch bump for push to master"
-fi
-
-gh release create "v$VERSION" opencontrol.tar.gz --title "v$VERSION" --notes "$NOTES"
+# CURRENT_VERSION=$(node -p "require('./packages/opencontrol/package.json').version")
+#
+# bun changeset version
+#
+# VERSION=$(node -p "require('./packages/opencontrol/package.json').version")
+#
+# if [ "$CURRENT_VERSION" == "$VERSION" ]; then
+#   echo "No version change detected. Skipping release."
+#   exit 0
+# fi
+#
+# echo "Version changed from $CURRENT_VERSION to $VERSION. Proceeding with release..."
+#
+# # Commit version bump changes and push to repository with [skip ci]
+# git add .
+# git commit -m "Version bump to $VERSION [skip ci]"
+# git push origin HEAD
+#
+# # Extract changelog notes for the current version from both packages
+# OC_LOG="packages/opencontrol/CHANGELOG.md"
+# FE_LOG="packages/frontend/CHANGELOG.md"
+#
+# # Extract OpenControl changelog notes
+# OC_NOTES=$(awk -v version="## $VERSION" '
+#   BEGIN { print_notes = 0 }
+#   $0 ~ version { print_notes = 1; next }
+#   print_notes && /^## / { exit }
+#   print_notes && !/^\s*$/ { print }
+# ' "$OC_LOG" | sed 's/^/    /')
+#
+# # Extract Frontend changelog notes
+# FE_NOTES=$(awk -v version="## $VERSION" '
+#   BEGIN { print_notes = 0 }
+#   $0 ~ version { print_notes = 1; next }
+#   print_notes && /^## / { exit }
+#   print_notes && !/^\s*$/ { print }
+# ' "$FE_LOG" | sed 's/^/    /')
+#
+# # Combine notes with headers
+# NOTES="### OpenControl Package\n\n$OC_NOTES\n\n### Frontend Package\n\n$FE_NOTES"
+#
+# # If no notes found in either changelog, use a fallback message
+# if [ -z "$OC_NOTES" ] && [ -z "$FE_NOTES" ]; then
+#   NOTES="Automated patch bump for push to master"
+# fi
+#
+# gh release create "v$VERSION" opencontrol.tar.gz --title "v$VERSION" --notes "$NOTES"

@@ -9,6 +9,7 @@ tar -cvf opencontrol.tar.gz -C packages opencontrol
 
 bun changeset version
 
+
 VERSION=$(node -p "require('./packages/opencontrol/package.json').version")
 
 # Extract changelog notes for the current version

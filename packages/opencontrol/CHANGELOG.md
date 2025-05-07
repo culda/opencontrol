@@ -1,5 +1,11 @@
 # opencontrol
 
+## 0.1.7
+
+### Patch Changes
+
+- fcce8b6: update script
+
 ## 0.1.6
 
 ### Patch Changes

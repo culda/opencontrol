@@ -1,5 +1,13 @@
 # opencontrol-frontend
 
+## 0.0.12
+
+### Patch Changes
+
+- fcce8b6: update script
+- Updated dependencies [fcce8b6]
+  - opencontrol@0.1.7
+
 ## 0.0.11
 
 ### Patch Changes

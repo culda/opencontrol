@@ -1,5 +1,11 @@
 # opencontrol
 
+## 1.0.1
+
+### Patch Changes
+
+- 8c09841: patch
+
 ## 1.0.0
 
 ### Major Changes

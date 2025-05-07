@@ -1,5 +1,13 @@
 # opencontrol-frontend
 
+## 1.0.1
+
+### Patch Changes
+
+- 8c09841: patch
+- Updated dependencies [8c09841]
+  - opencontrol@1.0.1
+
 ## 1.0.0
 
 ### Major Changes

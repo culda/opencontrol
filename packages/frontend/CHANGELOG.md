@@ -1,5 +1,16 @@
 # opencontrol-frontend
 
+## 1.0.0
+
+### Major Changes
+
+- 36b7584: major major
+
+### Patch Changes
+
+- Updated dependencies [36b7584]
+  - opencontrol@1.0.0
+
 ## 0.0.12
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # opencontrol
 
+## 1.0.0
+
+### Major Changes
+
+- 36b7584: major major
+
 ## 0.1.7
 
 ### Patch Changes

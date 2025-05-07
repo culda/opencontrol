@@ -13,8 +13,7 @@
   },
   "workspaces": [
     "packages/*",
-    "examples/*",
-    "www"
+    "examples/*"
   ],
   "devDependencies": {
     "@changesets/cli": "2.28.1",

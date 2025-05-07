@@ -20,7 +20,6 @@ fi
 
 echo "Version changed from $CURRENT_VERSION to $VERSION. Proceeding with release..."
 
-# Extract changelog notes for the current version
 CHANGELOG_FILE="packages/opencontrol/CHANGELOG.md"
 NOTES=$(awk -v version="## $VERSION" '
   BEGIN { print_notes = 0 }
@@ -29,7 +28,6 @@ NOTES=$(awk -v version="## $VERSION" '
   print_notes && !/^\s*$/ { print }
 ' "$CHANGELOG_FILE" | sed 's/^/    /')
 
-# If no notes found, use a fallback message
 if [ -z "$NOTES" ]; then
   NOTES="Automated patch bump for push to master"
 fi

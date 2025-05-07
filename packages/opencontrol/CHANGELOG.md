@@ -1,5 +1,11 @@
 # opencontrol
 
+## 0.1.6
+
+### Patch Changes
+
+- 326abad: some changeset
+
 ## 0.1.5
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # opencontrol-frontend
 
+## 0.0.11
+
+### Patch Changes
+
+- 326abad: some changeset
+- Updated dependencies [326abad]
+  - opencontrol@0.1.6
+
 ## 0.0.10
 
 ### Patch Changes
